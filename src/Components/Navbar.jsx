@@ -1,43 +1,34 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { MapPin, ShoppingCart } from "lucide-react";
+import { MapPin, ShoppingCart, ChevronDown, X } from "lucide-react";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  UserButton,
+} from "@clerk/clerk-react";
 
 const nav = [
-  {
-    name: "Home",
-    to: "/",
-    id: 1,
-  },
-  {
-    name: "About",
-    to: "/about",
-    id: 2,
-  },
-  {
-    name: "Contact",
-    to: "/contact",
-    id: 3,
-  },
-  {
-    name: "Cart",
-    to: "/cart",
-    id: 4,
-  },
-  {
-    name: "Products",
-    to: "/product",
-    id: 5,
-  },
+  { name: "Home", to: "/", id: 1 },
+  { name: "About", to: "/about", id: 2 },
+  { name: "Contact", to: "/contact", id: 3 },
+  { name: "Cart", to: "/cart", id: 4 },
+  { name: "Products", to: "/product", id: 5 },
 ];
 
-export default function Navbar() {
-  const [location, setLocation] = useState(false); // Fixed typo here
+export default function Navbar({ location }) {
   const [cartCount, setCartCount] = useState(0);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
 
   return (
-    <div className="w-full py-6 shadow-lg shadow-black bg-white">
+    <div className="w-full py-3 shadow-lg shadow-black bg-white">
       <div className="flex justify-between items-center max-w-6xl mx-auto">
-        {/* Logo Section  */}
+        {/* Logo Section */}
         <div className="flex items-center gap-4">
           <Link
             to={"/"}
@@ -45,12 +36,47 @@ export default function Navbar() {
           >
             <span className="text-red-500">Z</span>aptro
           </Link>
-          <MapPin className="text-red-500" />
-          <p className="font-semibold">
-            {location ? "Location" : "Add Location"}
-          </p>
+
+          <div className="relative">
+            <button
+              onClick={toggleDropdown}
+              className="font-semibold gap-1.5 flex items-center text-xs hover:text-red-500 transition-colors"
+            >
+              <MapPin className="text-red-500 w-4 h-4" />
+              {location ? (
+                <div className="text-left">
+                  <p>{location.amenity || "Unknown Place"}</p>
+                  <p>{location.district || "Unknown District"}</p>
+                  <p>{location.state || "Unknown State"}</p>
+                </div>
+              ) : (
+                <p>Add Location</p>
+              )}
+              <ChevronDown className="w-4 h-4" />
+            </button>
+
+            {isDropdownOpen && (
+              <div className="absolute top-full left-0 mt-2 w-48 bg-white shadow-lg rounded-lg p-2 z-50 border border-gray-200 border-solid">
+                <div className="flex justify-between items-center mb-2">
+                  <p className="font-semibold">Change Location</p>
+                  <X
+                    className="w-4 h-4 cursor-pointer"
+                    onClick={toggleDropdown}
+                  />
+                </div>
+                <p className="text-sm p-2 hover:bg-gray-100 rounded">
+                  Use current location
+                </p>
+                <p className="text-sm p-2 hover:bg-gray-100 rounded">
+                  Search for a location
+                </p>
+              </div>
+            )}
+          </div>
         </div>
-        <ul className="flex gap-7 text-md text-gray-600 font-semibold">
+
+        {/* Navigation Links */}
+        <ul className="flex gap-7 text-md text-gray-600 font-semibold cursor-pointer">
           {nav.map((item) => (
             <NavLink
               key={item.id}
@@ -71,9 +97,12 @@ export default function Navbar() {
             </span>
           </li>
           <li>
-            <button className="bg-red-500 text-white px-4 py-2 rounded-lg ">
-              Sign In
-            </button>
+            <SignedOut>
+              <SignInButton className="px-3 py-1 bg-red-600 text-white rounded-lg" />
+            </SignedOut>
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
           </li>
         </ul>
       </div>
