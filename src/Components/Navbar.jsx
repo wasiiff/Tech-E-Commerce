@@ -17,16 +17,20 @@ const nav = [
   { name: "Products", to: "/product", id: 5 },
 ];
 
-export default function Navbar({ location }) {
+export default function Navbar({
+  location,
+  getLocation,
+  isDropdownOpen,
+  setIsDropdownOpen,
+}) {
   const [cartCount, setCartCount] = useState(0);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
   return (
-    <div className="w-full py-3 shadow-lg shadow-black bg-white">
+    <div className="py-3 shadow-xs shadow-black bg-white">
       <div className="flex justify-between items-center max-w-6xl mx-auto">
         {/* Logo Section */}
         <div className="flex items-center gap-4">
@@ -46,8 +50,10 @@ export default function Navbar({ location }) {
               {location ? (
                 <div className="text-left">
                   <p>{location.amenity || "Unknown Place"}</p>
+                  <p>{location.town || "Unknown State"}</p>
                   <p>{location.district || "Unknown District"}</p>
                   <p>{location.state || "Unknown State"}</p>
+                  <p>{location.country || "Unknown State"}</p>
                 </div>
               ) : (
                 <p>Add Location</p>
@@ -64,11 +70,11 @@ export default function Navbar({ location }) {
                     onClick={toggleDropdown}
                   />
                 </div>
-                <p className="text-sm p-2 hover:bg-gray-100 rounded">
+                <p
+                  className="text-sm p-2 hover:bg-gray-100 rounded cursor-pointer"
+                  onClick={getLocation}
+                >
                   Use current location
-                </p>
-                <p className="text-sm p-2 hover:bg-gray-100 rounded">
-                  Search for a location
                 </p>
               </div>
             )}
